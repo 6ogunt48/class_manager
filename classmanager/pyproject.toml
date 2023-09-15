@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "application"
+version = "0.1.0"
+description = ""
+authors = ["Tobiloba Ogundiyan <114788338+6ogunt48@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.103.1"
+uvicorn = "^0.23.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
