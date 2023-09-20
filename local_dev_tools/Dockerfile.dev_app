@@ -1,0 +1,23 @@
+# Pull official base image
+FROM python:3.11.5-slim-bullseye
+
+# Set working directory and environment variables
+WORKDIR /usr/src/application
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONBUFFERED=1 PYTHONPATH="${PYTHONPATH}:/usr/src/application"
+
+# Install system and project dependencies
+RUN apt-get update && apt-get -y install netcat gcc postgresql && apt-get clean && pip install --upgrade pip && \
+    pip install poetry && \
+    poetry config virtualenvs.create false
+
+# Copy requirements and install project dependencies
+COPY ./classmanager/pyproject.toml ./classmanager/poetry.lock ./
+RUN poetry install
+
+# Copy application code and entrypoint
+COPY ./classmanager/application ./application
+COPY ./local_dev_tools/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+# Run entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
