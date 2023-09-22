@@ -1,0 +1,2 @@
+CREATE DATABASE class_manager_db;
+CREATE DATABASE class_manager_test_db;

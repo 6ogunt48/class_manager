@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./local_dev_tools/Dockerfile.dev_app
+    command: uvicorn application.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    volumes:
+      - ./classmanager/:/usr/src/application
+    ports:
+      - 8004:8000
+    environment:
+      - ENVIRONMENT=dev
+      - TESTING=0
+      - DATABASE_URL=postgres://postgres:postgres@app-database:5432/class_manager_db
+      - DATABASE_TEST_URL=postgres://postgres:postgres@app-database:5432/class_manager_test_db
+
+    depends_on:
+      - app-database
+
+  app-database:
+    build:
+      context: .
+      dockerfile: ./local_dev_tools/Dockerfile.db_dev
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
