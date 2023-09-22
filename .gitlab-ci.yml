@@ -21,25 +21,25 @@ build-production-image:
   only:
     changes:
       - classmanager/**/*
-#
-#
-#check-code-quality:
-#  stage: test
-#  image: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
-#  before_script:
-#    - poetry install
-#  script:
-#    - poetry run black . --check
-#    - poetry isort . --check-only --profile black
-#    - poetry run bandit .
-#    - poetry run safety check
-#
-#  only:
-#    refs:
-#      - merge_requests
-#      - main
-#    changes:
-#      - classmanager/**/*
+
+
+check-code-quality:
+  stage: test
+  image: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
+  before_script:
+    - poetry install
+  script:
+    - poetry run black . --check
+    - poetry isort . --check-only --profile black
+    - poetry run bandit .
+    - poetry run safety check
+
+  only:
+    refs:
+      - merge_requests
+      - main
+    changes:
+      - classmanager/**/*
 #
 #
 #run-application-tests:

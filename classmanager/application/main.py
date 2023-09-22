@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends
-from application.config import get_settings, Settings
+from fastapi import Depends, FastAPI
+
+from application.config import Settings, get_settings
 
 app = FastAPI()
 
@@ -9,5 +10,5 @@ async def pong(settings: Settings = Depends(get_settings)):
     return {
         "ping": "pong!",
         "environment": settings.environment,
-        "testing": settings.testing
+        "testing": settings.testing,
     }

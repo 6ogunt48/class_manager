@@ -2,6 +2,9 @@
 max-line-length = 120
 exclude =
     .git,
+    __pycache__,
+    build,
+    dist,
 
 max-complexity = 10
 docstring_style=sphinx
