@@ -39,8 +39,7 @@ check-code-quality:
     refs:
       - merge_requests
       - main
-    changes:
-      - classmanager/**/*
+
 #
 #
 #run-application-tests:
