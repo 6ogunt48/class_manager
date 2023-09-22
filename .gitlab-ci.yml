@@ -44,22 +44,17 @@ check-code-quality:
       - merge_requests
       - main
 
-#
-#
-#run-application-tests:
-#  stage: test
-#  image: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
-#  before_script:
-#    - poetry install
-#  script:
-#    - poetry run python -m pytest --junitxml=report.xml --cov=./ --cov-report=xml tests/**/*
-#  after_script:
-#    - bash <(curl -s https://codecov.io/bash)
-#  artifacts:
-#    when: always
-#    reports:
-#      junit: classmanager/report.xml
-#
-#
-#
-#
+
+run-application-tests:
+  stage: test
+  image: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
+  before_script:
+    - cd classmanager
+  script:
+    - poetry run python -m pytest --junitxml=report.xml --cov=./ --cov-report=xml tests/**/*
+  after_script:
+    - bash <(curl -s https://codecov.io/bash)
+  artifacts:
+    when: always
+    reports:
+      junit: classmanager/report.xml
