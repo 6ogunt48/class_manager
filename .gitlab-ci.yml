@@ -28,7 +28,7 @@ check-code-quality:
   image: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
   before_script:
     - cd classmanager
-    - sudo poetry install
+    - poetry install
   script:
     - poetry run black . --check
     - poetry isort . --check-only --profile black
