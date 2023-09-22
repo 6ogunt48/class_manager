@@ -18,7 +18,7 @@ RUN apt-get update && apt-get -y install netcat gcc postgresql && apt-get clean
 # install python dependencies
 RUN pip install --upgrade pip && pip install poetry
 COPY poetry.lock pyproject.toml $APP_HOME
-RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-dev
+RUN poetry config virtualenvs.create false && poetry install --no-interaction
 
 # add app
 COPY ./application $APP_HOME
