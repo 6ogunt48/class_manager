@@ -6,6 +6,11 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}  # Cache per branch
+  paths:
+    - ${CI_PROJECT_DIR}/classmanager/.venv/
+
 
 build-production-image:
   image: docker:24.0.6
@@ -28,9 +33,6 @@ check-code-quality:
   image: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
   before_script:
     - cd classmanager
-    - pwd
-    - echo $USER
-    - poetry install
   script:
     - poetry run black . --check
     - poetry isort . --check-only --profile black
