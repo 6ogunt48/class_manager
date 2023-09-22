@@ -5,6 +5,7 @@ stages:
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
+  IMAGE: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}  # Cache per branch
@@ -21,40 +22,39 @@ build-production-image:
     - cd classmanager
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY/$CI_PROJECT_PATH
-    - docker build -t registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image .
-    - docker push registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
+    - docker build -t $IMAGE .
+    - docker push $IMAGE
   only:
     changes:
       - classmanager/**/*
 
 
-check-code-quality:
+run tests and check-code-quality:
+  image: docker:24.0.6
+  services:
+    - docker:24.0.6-dind
   stage: test
-  image: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
   before_script:
     - cd classmanager
   script:
-    - poetry run black . --check
-    - poetry run isort . --check-only --profile black
-    - poetry run bandit .
-    - poetry run safety check
-
+    - docker pull $IMAGE
+    - >
+      docker run
+      -d
+      --name class_manager_test_container
+      -e PORT=8765
+      -e ENVIRONMENT=dev
+      -e DATABASE_URL=sqlite://sqlite.db
+      -e DATABASE_TEST_URL=sqlite://sqlite.db
+      $IMAGE
+    # Ensure your image has black, isort, bandit, and safety installed
+    - docker exec class_manager_test_container python -m black . --check
+    - docker exec class_manager_test_container python -m isort . --check-only --profile black
+    - docker exec class_manager_test_container python -m bandit -r .
+    - docker exec class_manager_test_container python -m safety check
+    # Run pytest tests
+    - docker exec class_manager_test_container python -m pytest --junitxml=report.xml --cov=./ --cov-report=xml tests/**/*
   only:
     refs:
       - merge_requests
       - main
-
-
-run-application-tests:
-  stage: test
-  image: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
-  before_script:
-    - cd classmanager
-  script:
-    - poetry run python -m pytest --junitxml=report.xml --cov=./ --cov-report=xml tests/**/*
-  after_script:
-    - bash <(curl -s https://codecov.io/bash)
-  artifacts:
-    when: always
-    reports:
-      junit: classmanager/report.xml
