@@ -35,7 +35,7 @@ check-code-quality:
     - cd classmanager
   script:
     - poetry run black . --check
-    - poetry isort . --check-only --profile black
+    - poetry run isort . --check-only --profile black
     - poetry run bandit .
     - poetry run safety check
 
