@@ -1,6 +1,5 @@
 stages:
   - build
-  - lint
   - test
 
 variables:
@@ -29,36 +28,32 @@ build-production-image:
     changes:
       - classmanager/**/*
 
-lint-code:
-  stage: lint
-  script:
-    - docker pull $IMAGE
-    - docker run --name lint_container $IMAGE python -m black . --check
-    - docker run --name lint_container $IMAGE python -m isort . --check-only --profile black
-  only:
-    refs:
-      - merge_requests
-      - main
 
-security-checks:
-  stage: lint
+run tests:
+  image: docker:24.0.6
+  services:
+    - docker:24.0.6-dind
+  stage: test
   before_script:
     - cd classmanager
   script:
     - docker pull $IMAGE
-    - docker run --name security_container $IMAGE python -m bandit -r .
-    - docker run --name security_container $IMAGE python -m safety check
-  only:
-    refs:
-      - merge_requests
-      - main
-
-run-tests:
-  stage: test
-  script:
-    - docker pull $IMAGE
-    - docker run -d --name test_container -e PORT=8765 -e ENVIRONMENT=dev -e DATABASE_URL=sqlite://sqlite.db -e DATABASE_TEST_URL=sqlite://sqlite_test.db $IMAGE
-    - docker exec test_container python -m pytest --junitxml=report.xml --cov=./ --cov-report=xml tests/**/*
+    - >
+      docker run
+      -d
+      --name class_manager_test_container
+      -e PORT=8765
+      -e ENVIRONMENT=dev
+      -e DATABASE_URL=sqlite://sqlite.db
+      -e DATABASE_TEST_URL=sqlite://sqlite.db
+      $IMAGE
+ # Ensure your image has black, isort, bandit, and safety installed
+    - docker exec class_manager_test_container python -m bandit -r .
+    - docker exec class_manager_test_container python -m black . --check
+    - docker exec class_manager_test_container python -m isort . --check-only --profile black
+    - docker exec class_manager_test_container python -m safety check
+    # Run pytest tests
+    - docker exec class_manager_test_container python -m pytest --junitxml=report.xml --cov=./ --cov-report=xml tests/**/*
   only:
     refs:
       - merge_requests
