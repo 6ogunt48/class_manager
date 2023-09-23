@@ -42,6 +42,8 @@ lint-code:
 
 security-checks:
   stage: lint
+  before_script:
+    - cd classmanager
   script:
     - docker pull $IMAGE
     - docker run --name security_container $IMAGE python -m bandit -r .
