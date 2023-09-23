@@ -21,11 +21,11 @@ RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir poetr
 # copy only the files needed for installing dependencies
 COPY .  /usr/src/app/
 
-# Generate wheels
-RUN poetry config virtualenvs.create false && poetry install  && \
-    poetry build -n -f wheel && pip wheel /usr/src/app/ --wheel-dir /wheels
+# export requirements to requirements.txt
+RUN poetry export -f requirements.txt --output requirements.txt
 
-
+# install dependencies to wheels
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels -r requirements.txt
 #########
 # FINAL #
 #########
