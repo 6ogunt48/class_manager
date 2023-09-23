@@ -13,18 +13,17 @@ pydantic-settings = "^2.0.3"
 asyncpg = "^0.28.0"
 tortoise-orm = "^0.20.0"
 gunicorn = "^21.2.0"
-
-
-[tool.poetry.group.dev.dependencies]
-flake8 = "^6.1.0"
-black = "^23.9.1"
 bandit = "^1.7.5"
+flake8 = "^6.1.0"
+httpx = "^0.25.0"
+pytest = "^7.4.2"
 safety = "^2.3.5"
 isort = "^5.12.0"
-pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
-httpx = "^0.25.0"
-poetry = "^1.6.1"
+black = "^23.9.1"
+
+
+
 
 [build-system]
 requires = ["poetry-core"]

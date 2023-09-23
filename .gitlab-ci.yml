@@ -7,10 +7,10 @@ variables:
   DOCKER_TLS_CERTDIR: "/certs"
   IMAGE: registry.gitlab.com/apprentice.py/class_manager:class_manager_production_image
 
-#cache:
-#  key: ${CI_COMMIT_REF_SLUG}  # Cache per branch
-#  paths:
-#    - ${CI_PROJECT_DIR}/classmanager/.venv/
+cache:
+  key: ${CI_COMMIT_REF_SLUG}  # Cache per branch
+  paths:
+    - ${CI_PROJECT_DIR}/classmanager/.venv/
 
 
 build-production-image:
