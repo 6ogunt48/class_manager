@@ -45,11 +45,12 @@ COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir /wheels/*.whl && rm -rf /wheels
 
 # Copy application files and set permissions
-COPY ./application $APP_HOME
+COPY . $APP_HOME
 RUN addgroup --system app && adduser --system --group app && chown -R app:app $HOME
 
 # Switch to non-root user
 USER app
 
 # Run gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "web.application.main:app", "-k", "uvicorn.workers.UvicornWorker"]
+CMD gunicorn --bind 0.0.0.0:$PORT application.main:app -k uvicorn.workers.UvicornWorker
+
