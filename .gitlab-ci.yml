@@ -35,6 +35,7 @@ run tests:
   before_script:
     - apt-get update -y
     - apt-get install -y docker.io
+    - service docker start
     - docker pull $IMAGE
   script:
     - docker pull $IMAGE
