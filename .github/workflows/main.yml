@@ -3,6 +3,11 @@ on:
   push:
     paths:
       - 'classmanager/**'
+    branches:
+      - main
+    push:
+      branches:
+        - main
 
 env:
   IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[A-Z]' '[a-z]')/cm_prod_image
