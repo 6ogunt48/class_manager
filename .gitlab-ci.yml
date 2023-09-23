@@ -32,7 +32,7 @@ build-production-image:
 run tests:
   image: docker:19.03.12
   services:
-    - docker:24.03.12-dind
+    - docker:19.03.12-dind
   stage: test
   before_script:
     - cd classmanager
