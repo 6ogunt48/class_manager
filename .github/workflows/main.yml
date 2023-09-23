@@ -79,7 +79,7 @@ jobs:
         run: docker exec class-manager-test python -m flake8 .
       - name: Black
         run: docker exec class-manager-test python -m black . --check
-      - nam:  isort
+      - name:  isort
         run: docker exec class-manager-test python -m isort . --check-only
       - name: bandit
         run: docker exec class-manager-test python -m bandit -r . --exclude tests/
