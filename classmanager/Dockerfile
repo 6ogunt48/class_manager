@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir poetr
 COPY .  /usr/src/app/
 
 # Generate wheels
-RUN poetry config virtualenvs.create false && poetry install && \
+RUN poetry config virtualenvs.create false && poetry install --no-interaction --dev && \
     poetry build -n -f wheel && pip wheel /usr/src/app/ --wheel-dir /wheels
 
 
