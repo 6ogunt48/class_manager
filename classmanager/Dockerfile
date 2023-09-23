@@ -6,7 +6,8 @@
 FROM python:3.11.5-slim-bullseye as builder
 
 # install system dependencies
-RUN apt-get update && apt-get -y  && apt-get clean
+RUN apt-get update && apt-get -y install netcat gcc && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # set work directory
 WORKDIR /usr/src/app
@@ -37,7 +38,7 @@ ENV HOME=/home/app APP_HOME=/home/app/web PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFF
 WORKDIR $APP_HOME
 
 # install system dependencies
-RUN apt-get update && apt-get -y install netcat gcc postgresql curl && apt-get clean
+RUN apt-get update && apt-get -y install netcat gcc postgresql curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 COPY --from=builder /wheels /wheels
