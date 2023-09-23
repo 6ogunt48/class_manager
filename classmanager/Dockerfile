@@ -5,12 +5,11 @@
 # pull official base image
 FROM python:3.11.5-slim-bullseye as builder
 
-
 # install system dependencies
-RUN apt-get update && apt-get -y install netcat gcc postgresql curl && apt-get clean
+RUN apt-get update && apt-get -y  && apt-get clean
 
 # set work directory
-WORKDIR /wheels
+WORKDIR /usr/src/app
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
@@ -18,12 +17,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 # install dependencies
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir poetry
 
-COPY poetry.lock pyproject.toml ./
-
+# copy only the files needed for installing dependencies
+COPY poetry.lock pyproject.toml /usr/src/app/
 
 # Generate wheels
-RUN poetry config virtualenvs.create false && poetry install --no-root --no-interaction && poetry build -n -f wheel && \
-    pip wheel . --wheel-dir /wheels
+RUN poetry config virtualenvs.create false && poetry install --no-root --no-interaction && \
+    poetry build -n -f wheel && pip wheel /usr/src/app/ --wheel-dir /wheels
+
 
 #########
 # FINAL #
@@ -35,6 +35,9 @@ FROM python:3.11.5-slim-bullseye
 # Create directory for the app user
 ENV HOME=/home/app APP_HOME=/home/app/web PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR $APP_HOME
+
+# install system dependencies
+RUN apt-get update && apt-get -y install netcat gcc postgresql curl && apt-get clean
 
 # Install dependencies
 COPY --from=builder /wheels /wheels
