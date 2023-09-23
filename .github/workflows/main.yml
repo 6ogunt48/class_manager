@@ -24,7 +24,8 @@ jobs:
 
       - name: Build image
         run: |
-          docker build \
+          docker buildx build \
+            --platform linux/amd64 \
             --cache-from ${{ env.IMAGE }}:latest \
             --tag ${{ env.IMAGE }}:latest \
             --file ./classmanager/Dockerfile.prod \
@@ -53,7 +54,8 @@ jobs:
 
       - name: Build image
         run: |
-          docker build \
+          docker buildx build \
+            --platform linux/amd64 \
             --cache-from ${{ env.IMAGE }}:latest \
             --tag ${{ env.IMAGE }}:latest \
             --file ./classmanager/Dockerfile.prod \
