@@ -19,7 +19,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir poetry
 
 # copy only the files needed for installing dependencies
-COPY poetry.lock pyproject.toml /usr/src/app/
+COPY .  /usr/src/app/
 
 # Generate wheels
 RUN poetry config virtualenvs.create false && poetry install --no-root --no-interaction && \
