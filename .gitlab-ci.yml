@@ -30,12 +30,12 @@ build-production-image:
 
 
 run tests:
-  image: docker:24.0.6
-  services:
-    - docker:24.0.6-dind
+  image: ubuntu:latest
   stage: test
   before_script:
-    - cd classmanager
+    - apt-get update -y
+    - apt-get install -y docker.io
+    - docker pull $IMAGE
   script:
     - docker pull $IMAGE
     - >
