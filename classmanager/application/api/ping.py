@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
-from application.config import get_settings, Settings
+
+from application.config import Settings, get_settings
 
 router = APIRouter()
 
@@ -10,5 +11,5 @@ async def pong(settings: Settings = Depends(get_settings)) -> dict:
     return {
         "ping": "pong!",
         "environment": settings.environment,
-        "testing": settings.testing
+        "testing": settings.testing,
     }

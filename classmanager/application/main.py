@@ -1,10 +1,9 @@
-import os
-from application.db.database_config import init_db
 import logging
-from fastapi import Depends, FastAPI
-from tortoise.contrib.fastapi import register_tortoise
-from application.config import Settings, get_settings
-from application.api import ping
+
+from fastapi import FastAPI
+
+from application.api import auth, ping
+from application.db.database_config import init_db
 
 log = logging.getLogger("uvicorn")
 
@@ -12,6 +11,7 @@ log = logging.getLogger("uvicorn")
 def create_application() -> FastAPI:
     application = FastAPI()
     application.include_router(ping.router, prefix="/env", tags=["env"])
+    application.include_router(auth.router, prefix="/auth", tags=["Auth"])
 
     return application
 

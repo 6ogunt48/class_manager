@@ -1,12 +1,12 @@
-from tortoise import fields, models
-from tortoise.contrib.pydantic import pydantic_model_creator
-from tortoise.fields import DatetimeField
 from enum import Enum
+
+from tortoise import fields, models
+from tortoise.fields import DatetimeField
 
 
 class UserRole(str, Enum):
-    STUDENT = 'student'
-    TEACHER = 'teacher'
+    STUDENT = "student"
+    TEACHER = "teacher"
 
 
 class User(models.Model):
@@ -22,7 +22,9 @@ class User(models.Model):
     created_at = DatetimeField(auto_now_add=True)  # Audit field
     updated_at = DatetimeField(auto_now=True)  # Audit field
 
-    courses = fields.ManyToManyField('models.Course', related_name='students', through='enrollments')
+    courses = fields.ManyToManyField(
+        "models.Course", related_name="students", through="enrollments"
+    )
 
     class Meta:
         table = "users"
@@ -38,7 +40,7 @@ class Course(models.Model):
     title = fields.CharField(max_length=100)
     description = fields.TextField(null=True)
 
-    teacher = fields.ForeignKeyField('models.User', related_name='courses_taught')
+    teacher = fields.ForeignKeyField("models.User", related_name="courses_taught")
 
     class Meta:
         table = "courses"
