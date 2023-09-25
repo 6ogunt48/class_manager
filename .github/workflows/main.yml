@@ -3,7 +3,7 @@ on: [push]
 
 
 env:
-  IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[A-Z]' '[a-z]')/cm_prod_image
+  IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[A-Z]' '[a-z]')/web
 
 jobs:
   build:

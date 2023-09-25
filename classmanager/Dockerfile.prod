@@ -15,7 +15,8 @@ WORKDIR /usr/src/app
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 
-# install dependencies
+
+# install pip
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir poetry
 
 # copy only the files needed for installing dependencies
@@ -34,7 +35,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels -r requirements.txt
 FROM python:3.11.5-slim-bullseye
 
 # Create directory for the app user
-ENV HOME=/home/app APP_HOME=/home/app/web PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ENV HOME=/home/app APP_HOME=/home/app/web PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 ENVIRONMENT=prod  TESTING=0
 WORKDIR $APP_HOME
 
 # install system dependencies
