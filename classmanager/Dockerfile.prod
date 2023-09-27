@@ -35,8 +35,9 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels -r requirements.txt
 FROM python:3.11.5-slim-bullseye
 
 # Create directory for the app user
-ENV HOME=/home/app APP_HOME=/home/app/web PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 ENVIRONMENT=prod  TESTING=0
-WORKDIR $APP_HOME
+ENV HOME=/home/app APPLICATION_HOME=/home/app/web PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 ENVIRONMENT=prod  TESTING=0 \
+SECRET_KEY="ddecb1f1cf90ba71f78917b8d59f13e0b0748839204ce235fce82d17b7b0a8ae66c33b76fab41b7fef5735de9de9880660a114b7d9e57f93316de61923c4804b"
+WORKDIR $APPLICATION_HOME
 
 # install system dependencies
 RUN apt-get update && apt-get -y install netcat gcc postgresql curl && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -46,7 +47,7 @@ COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir /wheels/*.whl && rm -rf /wheels
 
 # Copy application files and set permissions
-COPY . $APP_HOME
+COPY . $APPLICATION_HOME
 RUN addgroup --system app && adduser --system --group app && chown -R app:app $HOME
 
 # Switch to non-root user

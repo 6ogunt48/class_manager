@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "waiting for postgres..."
+echo "App is waiting for postgres DB ....."
 
 while ! nc -z  app-database 5432; do
   sleep 0.2

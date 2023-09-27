@@ -21,6 +21,7 @@ class User(models.Model):
     role = fields.CharEnumField(UserRole, max_length=10)
     created_at = DatetimeField(auto_now_add=True)  # Audit field
     updated_at = DatetimeField(auto_now=True)  # Audit field
+    refresh_token = fields.TextField(null=True)
 
     courses = fields.ManyToManyField(
         "models.Course", related_name="students", through="enrollments"

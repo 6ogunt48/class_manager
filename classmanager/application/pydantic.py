@@ -41,3 +41,14 @@ class UserCreate(BaseModel):
 
 class UserCreateResponse(BaseModel):
     message: str
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+
+class LoginResponse(BaseModel):
+    message: str
+
+

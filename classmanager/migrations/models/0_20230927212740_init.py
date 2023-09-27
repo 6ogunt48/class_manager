@@ -15,6 +15,7 @@ async def upgrade(db: BaseDBAsyncClient) -> str:
     "role" VARCHAR(10) NOT NULL,
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
+    "refresh_token" TEXT,
     CONSTRAINT "uid_users_email_e7531f" UNIQUE ("email", "username")
 );
 CREATE INDEX IF NOT EXISTS "idx_users_usernam_266d85" ON "users" ("username");
