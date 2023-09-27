@@ -50,5 +50,3 @@ class UserLogin(BaseModel):
 
 class LoginResponse(BaseModel):
     message: str
-
-

@@ -1,14 +1,15 @@
-from fastapi import APIRouter, HTTPException, Cookie, Depends
 import os
-from fastapi.security import OAuth2PasswordBearer
-from fastapi.responses import JSONResponse
-from starlette import status
 from datetime import datetime, timedelta
-import jwt
 from typing import Optional
 
+import jwt
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
+from starlette import status
+
 from application.db.app_models import User, UserRole
-from application.pydantic import UserCreate, UserCreateResponse, LoginResponse, UserLogin
+from application.pydantic import (LoginResponse, UserCreate,
+                                  UserCreateResponse, UserLogin)
 from application.utils import async_hash_password, verify_password
 
 router = APIRouter()
@@ -62,4 +63,3 @@ async def login(user_data: UserLogin) -> LoginResponse:
     response = JSONResponse(content={"message": "Authentication Successful"})
     response.set_cookie(key="access_token", value=access_token, httponly=True)
     return LoginResponse(message="Authentication Successful", access_token=access_token)
-

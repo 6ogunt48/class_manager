@@ -1,6 +1,7 @@
-from passlib.context import CryptContext
-from fastapi.concurrency import run_in_threadpool
 import asyncio
+
+from fastapi.concurrency import run_in_threadpool
+from passlib.context import CryptContext
 
 # chose hashing algorithm
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -18,4 +19,3 @@ async def verify_password(plain_password: str, hashed_password: str) -> bool:
 # we run hashing in separate threads to improve performance
 async def async_hash_password(password: str) -> str:
     return await run_in_threadpool(hash_password, password)
-
