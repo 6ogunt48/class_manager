@@ -65,7 +65,7 @@ async def login(user_data: UserLogin) -> LoginResponse:
 
 """
 write test for login endpoint
-write test for logout endpoint
+write test for logout endpoint.
 implement logout endpoint
 write test to change passwird endpoint
 implment change password endpoint
