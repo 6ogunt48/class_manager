@@ -63,25 +63,10 @@ async def login(user_data: UserLogin) -> LoginResponse:
     response.set_cookie(key="access_token", value=access_token, httponly=True)
     return LoginResponse(message="Authentication Successful", access_token=access_token)
 
-
-
-
-
-
-
-
-
 """
-
 write test for login endpoint
 write test for logout endpoint
 implement logout endpoint
 write test to change passwird endpoint
 implment change password endpoint
 """
-
-
-
-
-
-
