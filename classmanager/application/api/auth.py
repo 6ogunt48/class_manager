@@ -22,11 +22,11 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    encoded_token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_token
 
 
-def decode_jwt_token(token: str) -> Optional[dict]:
+def decode_token(token: str) -> Optional[dict]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
@@ -67,6 +67,6 @@ async def login(user_data: UserLogin) -> LoginResponse:
 write test for login endpoint
 write test for logout endpoint.
 implement logout endpoint
-write test to change passwird endpoint
-implment change password endpoint
+write test to change password endpoint
+implement change password endpoint
 """
