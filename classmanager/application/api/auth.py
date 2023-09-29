@@ -8,8 +8,9 @@ from fastapi.responses import JSONResponse
 from starlette import status
 
 from application.db.app_models import User, UserRole
-from application.pydantic import (LoginResponse, UserCreate,
-                                  UserCreateResponse, UserLogin, PasswordChange, PasswordChangeResponse)
+from application.pydantic import (LoginResponse, PasswordChange,
+                                  PasswordChangeResponse, UserCreate,
+                                  UserCreateResponse, UserLogin)
 from application.utils import async_hash_password, verify_password
 
 router = APIRouter()
@@ -74,5 +75,3 @@ async def change_password(user_data: PasswordChange) -> PasswordChangeResponse:
     user.password_hash = new_hashed_password
     await user.save()
     return PasswordChangeResponse(message="Password changed successfully")
-
-

@@ -1,7 +1,8 @@
 import asyncio
+from typing import Awaitable
+
 from fastapi.concurrency import run_in_threadpool
 from passlib.context import CryptContext
-from typing import Awaitable
 
 # Initialize CryptContext
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
