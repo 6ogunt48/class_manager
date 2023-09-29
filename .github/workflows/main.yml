@@ -113,3 +113,4 @@ jobs:
       - name: Release
         run: |
           chmod +x ./release.sh
+          ./release.sh
