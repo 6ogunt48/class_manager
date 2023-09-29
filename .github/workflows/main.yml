@@ -61,7 +61,7 @@ jobs:
             ${{ env.IMAGE }}:latest
 
       - name: Install requirements
-        run: docker exec class-manager-test pip install black flake8 isort pytest bandit safety httpx pytest-cov
+        run: docker exec class-manager-test pip install black flake8 isort pytest bandit safety httpx pytest-cov pytest-asyncio
       - name: Pytest
         run: docker exec class-manager-test python -m pytest .
       - name: Flake8

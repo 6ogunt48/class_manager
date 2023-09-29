@@ -9,7 +9,7 @@ from starlette import status
 
 from application.db.app_models import User, UserRole
 from application.pydantic import (LoginResponse, UserCreate,
-                                  UserCreateResponse, UserLogin)
+                                  UserCreateResponse, UserLogin, PasswordChange, PasswordChangeResponse)
 from application.utils import async_hash_password, verify_password
 
 router = APIRouter()
@@ -63,10 +63,16 @@ async def login(user_data: UserLogin) -> LoginResponse:
     response.set_cookie(key="access_token", value=access_token, httponly=True)
     return LoginResponse(message="Authentication Successful", access_token=access_token)
 
-"""
-write test for login endpoint
-write test for logout endpoint.
-implement logout endpoint
-write test to change password endpoint
-implement change password endpoint
-"""
+
+@router.post("/change-password/", status_code=status.HTTP_200_OK, response_model=PasswordChangeResponse)
+async def change_password(user_data: PasswordChange) -> PasswordChangeResponse:
+    user = await User.filter(username=user_data.username).first()
+    if not user or not await verify_password(user_data.password, user.password_hash):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or old password")
+
+    new_hashed_password = await async_hash_password(user_data.new_password)
+    user.password_hash = new_hashed_password
+    await user.save()
+    return PasswordChangeResponse(message="Password changed successfully")
+
+

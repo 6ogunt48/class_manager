@@ -50,3 +50,13 @@ class UserLogin(BaseModel):
 
 class LoginResponse(BaseModel):
     message: str
+
+
+class PasswordChange(BaseModel):
+    username: str
+    password: str
+    new_password: str
+
+
+class PasswordChangeResponse(BaseModel):
+    message: str
