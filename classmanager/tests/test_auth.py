@@ -51,8 +51,9 @@ def test_change_password(test_app_with_db):
     # Change password
     change_password_data = {
         "username": "Mark12DoeWest",
-        "old_password": "StrongPass1!",
+        "password": "StrongPass1!",
         "new_password": "NewStrongPass1!"
     }
     response = test_app_with_db.post("/auth/change-password/", json=change_password_data)
     assert response.status_code == 200
+    assert response.json()["message"] == "Password changed successfully"
