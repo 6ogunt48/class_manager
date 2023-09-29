@@ -39,10 +39,10 @@ def test_login_valid_user(test_app_with_db):
 def test_change_password(test_app_with_db):
     # Create a user
     data = {
-        "first_name": "Jane",
-        "last_name": "Doe",
+        "first_name": "Janet",
+        "last_name": "max",
         "username": "Mark12DoeWest",
-        "email": "mark@mark,com",
+        "email": "mark@mark.com",
         "password": "StrongPass1!",
         "role": "student",
     }
