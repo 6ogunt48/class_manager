@@ -32,7 +32,7 @@ def test_login_valid_user(test_app_with_db):
         "username": "Apprentice12",
         "password": "StrongPass1!"
     }
-    response = test_app_with_db.post("/auth/login/", json=login_data)
+    response = test_app_with_db.post("/auth/login/", data=login_data)
     assert response.status_code == 200
 
 
