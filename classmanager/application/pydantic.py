@@ -43,11 +43,6 @@ class UserCreateResponse(BaseModel):
     message: str
 
 
-class UserLogin(BaseModel):
-    username: str
-    password: str
-
-
 class LoginResponse(BaseModel):
     message: str
 
@@ -59,4 +54,14 @@ class PasswordChange(BaseModel):
 
 
 class PasswordChangeResponse(BaseModel):
+    message: str
+
+
+class CreateCourse(BaseModel):
+    course_code: str = Field(..., min_length=2, max_length=6)
+    title: str = Field(..., min_length=2, max_length=100)
+    description: str = Field(None, max_length=500)
+
+
+class CreateCourseResponse(BaseModel):
     message: str

@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: local_dev_tools/Dockerfile
-    command: uvicorn application.main:app --reload --workers 4 --host 0.0.0.0 --port 8000
+    command: uvicorn application.main:app --reload --workers 1  --host 0.0.0.0 --port 8000
     volumes:
       - ./classmanager/:/usr/src/application
     ports:
@@ -22,7 +22,7 @@ services:
   app-database:
     build:
       context: .
-      dockerfile: local_dev_tools/Dockerfile.db
+      dockerfile: local_dev_tools/Dockerfile.postgres
     expose:
       - 5432
     environment:

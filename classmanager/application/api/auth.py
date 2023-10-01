@@ -1,22 +1,25 @@
+import logging
 import os
 from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from starlette import status
 
 from application.db.app_models import User, UserRole
 from application.pydantic import (LoginResponse, PasswordChange,
                                   PasswordChangeResponse, UserCreate,
-                                  UserCreateResponse, UserLogin)
+                                  UserCreateResponse)
 from application.utils import async_hash_password, verify_password
 
 router = APIRouter()
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/")
+logger = logging.getLogger("uvicorn")
 
 
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=40)) -> str:
@@ -37,6 +40,7 @@ def decode_token(token: str) -> Optional[dict]:
 
 @router.post("/register-user/", status_code=status.HTTP_201_CREATED, response_model=UserCreateResponse)
 async def register_user(user_data: UserCreate) -> UserCreateResponse:
+    """ role student or teacher """
     user_exists = await User.filter(email=user_data.email).first()
     if user_exists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
@@ -53,16 +57,15 @@ async def register_user(user_data: UserCreate) -> UserCreateResponse:
 
 
 @router.post("/login/", status_code=status.HTTP_200_OK, response_model=LoginResponse)
-async def login(user_data: UserLogin) -> LoginResponse:
+async def login(response: Response, user_data: OAuth2PasswordRequestForm = Depends()) -> LoginResponse:
     user = await User.filter(username=user_data.username).first()
     if not user or not await verify_password(user_data.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
 
     access_token = create_access_token(data={"username": user.username})
 
-    response = JSONResponse(content={"message": "Authentication Successful"})
-    response.set_cookie(key="access_token", value=access_token, httponly=True)
-    return LoginResponse(message="Authentication Successful", access_token=access_token)
+    response.set_cookie(key="access_token", value=access_token, httponly=True, secure=True)
+    return {"message": "Authentication Successful", "access_token": access_token}
 
 
 @router.post("/change-password/", status_code=status.HTTP_200_OK, response_model=PasswordChangeResponse)
@@ -75,3 +78,18 @@ async def change_password(user_data: PasswordChange) -> PasswordChangeResponse:
     user.password_hash = new_hashed_password
     await user.save()
     return PasswordChangeResponse(message="Password changed successfully")
+
+
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+    logger.info(f"Token received: {token}")
+    payload = decode_token(token)
+
+    if payload is None:
+        logger.error("User not authenticated: payload is None")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
+    username = payload.get("username")
+    user = await User.filter(username=username).first()
+    if not user:
+        logger.error(f"no user found with user name : {username}")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
+    return user
