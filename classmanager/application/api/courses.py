@@ -30,4 +30,3 @@ async def create_course(course_data: CreateCourse,
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database integrity error")
 
     return CreateCourseResponse(message=f"Course {new_course.title} successfully created")
-
