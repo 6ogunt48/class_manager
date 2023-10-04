@@ -1,6 +1,7 @@
 from enum import Enum
 
 from tortoise import fields, models
+from tortoise.contrib.pydantic import pydantic_model_creator
 from tortoise.fields import DatetimeField
 
 
@@ -72,7 +73,7 @@ class Marks(models.Model):
     score = fields.IntField()
     comments = fields.TextField(null=True)
     student = fields.ForeignKeyField("models.User", related_name="marks")
-    assignment = fields.ForeignKeyField("models.Assignment")
+    assignment = fields.ForeignKeyField("models.Assignment", related_name="marks")
     created_at = DatetimeField(auto_now_add=True)
     updated_at = DatetimeField(auto_now=True)
 
@@ -124,3 +125,13 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f"{self.student} enrolled in {self.course}"
+
+
+# Create Pydantic models
+User_Pydantic = pydantic_model_creator(User, name="User")
+Course_Pydantic = pydantic_model_creator(Course, name="Course")
+Assignment_Pydantic = pydantic_model_creator(Assignment, name="Assignment")
+Marks_Pydantic = pydantic_model_creator(Marks, name="Marks")
+Notice_Pydantic = pydantic_model_creator(Notice, name="Notice")
+Message_Pydantic = pydantic_model_creator(Message, name="Message")
+Enrollment_Pydantic = pydantic_model_creator(Enrollment, name="Enrollment")

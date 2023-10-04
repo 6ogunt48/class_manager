@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing_extensions import Literal
 
-from application.db.app_models import UserRole
+from application.db.app_models import Assignment_Pydantic, UserRole
 
 
 class UserCreate(BaseModel):
@@ -47,6 +49,11 @@ class LoginResponse(BaseModel):
     message: str
 
 
+class Login(BaseModel):
+    username: str
+    password: str
+
+
 class PasswordChange(BaseModel):
     username: str
     password: str
@@ -65,3 +72,40 @@ class CreateCourse(BaseModel):
 
 class CreateCourseResponse(BaseModel):
     message: str
+
+
+class AssignmentCreate(BaseModel):
+    course_id: int = Field(..., description="ID of the course")
+    title: str = Field(..., min_length=5, max_length=100)
+    description: str = Field(..., min_length=5)
+    due_date: str
+    file_path: str = Field(None, max_length=255)
+
+    @field_validator("due_date")
+    @classmethod
+    def parse_due_date(cls, due_date):
+        try:
+            # Parse the date and convert it back to ISO format string
+            return datetime.strptime(due_date, "%m-%d-%Y").isoformat()
+        except ValueError:
+            raise ValueError("Invalid date format, use MM-DD-YYYY")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "due_date": "12-31-2022"
+            },
+            "properties": {
+                "due_date": {
+                    "format": "MM-DD-YYYY"
+                }
+            }
+        }
+
+
+class AssignmentCreateResponse(BaseModel):
+    message: str
+
+
+class CustomAssignment_Pydantic(Assignment_Pydantic):
+    due_date: datetime = Field(...)

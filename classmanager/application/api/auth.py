@@ -1,15 +1,13 @@
-import logging
 import os
 from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
-from fastapi import APIRouter, Depends, HTTPException, Response
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, HTTPException, Request, Response
 from starlette import status
 
 from application.db.app_models import User, UserRole
-from application.pydantic import (LoginResponse, PasswordChange,
+from application.pydantic import (Login, LoginResponse, PasswordChange,
                                   PasswordChangeResponse, UserCreate,
                                   UserCreateResponse)
 from application.utils import async_hash_password, verify_password
@@ -18,8 +16,6 @@ router = APIRouter()
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/")
-logger = logging.getLogger("uvicorn")
 
 
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=40)) -> str:
@@ -57,7 +53,7 @@ async def register_user(user_data: UserCreate) -> UserCreateResponse:
 
 
 @router.post("/login/", status_code=status.HTTP_200_OK, response_model=LoginResponse)
-async def login(response: Response, user_data: OAuth2PasswordRequestForm = Depends()) -> LoginResponse:
+async def login(response: Response, user_data: Login) -> LoginResponse:
     user = await User.filter(username=user_data.username).first()
     if not user or not await verify_password(user_data.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
@@ -65,7 +61,7 @@ async def login(response: Response, user_data: OAuth2PasswordRequestForm = Depen
     access_token = create_access_token(data={"username": user.username})
 
     response.set_cookie(key="access_token", value=access_token, httponly=True, secure=True)
-    return {"message": "Authentication Successful", "access_token": access_token}
+    return LoginResponse(message="Login successful")
 
 
 @router.post("/change-password/", status_code=status.HTTP_200_OK, response_model=PasswordChangeResponse)
@@ -80,16 +76,18 @@ async def change_password(user_data: PasswordChange) -> PasswordChangeResponse:
     return PasswordChangeResponse(message="Password changed successfully")
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    logger.info(f"Token received: {token}")
+async def get_current_user(request: Request) -> User:
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
     payload = decode_token(token)
 
     if payload is None:
-        logger.error("User not authenticated: payload is None")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
+
     username = payload.get("username")
     user = await User.filter(username=username).first()
     if not user:
-        logger.error(f"no user found with user name : {username}")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User is not registered on this app")
+
     return user
