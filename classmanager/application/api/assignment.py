@@ -17,6 +17,12 @@ async def create_assignment(assignment: AssignmentCreate,
                             current_user: User = Depends(get_current_user)) -> AssignmentCreateResponse:
     if current_user.role != UserRole.TEACHER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can create courses")
+
+    # Check if assignment with the same title or description already exists
+    existing_assignment = await Assignment.filter(title=assignment.title).first()
+    if existing_assignment:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Assignment title already exists")
+
     try:
         new_assignment = await Assignment.create(
             course_id=assignment.course_id,

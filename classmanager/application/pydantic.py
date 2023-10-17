@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing_extensions import Literal
@@ -109,3 +110,23 @@ class AssignmentCreateResponse(BaseModel):
 
 class CustomAssignment_Pydantic(Assignment_Pydantic):
     due_date: datetime = Field(...)
+
+
+class UserProfile(BaseModel):
+    first_name: str
+    last_name: str
+    username: str
+    email: str
+    profile_picture: Optional[str] = None
+    role: UserRole
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+
+class UserProfileUpdate(BaseModel):
+    first_name: Optional[str] = Field(...)
+    last_name: Optional[str] = Field(...)
+    username: Optional[str]
+    email: Optional[str]
+    profile_picture: Optional[str]
+    role: Optional[UserRole]

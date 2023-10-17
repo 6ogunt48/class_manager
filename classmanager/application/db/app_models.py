@@ -128,7 +128,7 @@ class Enrollment(models.Model):
 
 
 # Create Pydantic models
-User_Pydantic = pydantic_model_creator(User, name="User")
+User_Pydantic = pydantic_model_creator(User, name="User", exclude=("password_hash", "refresh_token"))
 Course_Pydantic = pydantic_model_creator(Course, name="Course")
 Assignment_Pydantic = pydantic_model_creator(Assignment, name="Assignment")
 Marks_Pydantic = pydantic_model_creator(Marks, name="Marks")
