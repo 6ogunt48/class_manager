@@ -1,7 +1,9 @@
 from datetime import datetime
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from starlette import status
+from tortoise.expressions import Q
 
 from application.api.auth import get_current_user
 from application.db.app_models import User
@@ -64,3 +66,42 @@ async def update_user_profile(user_data: UserProfileUpdate,
         updated_at=user.updated_at,
         profile_picture=user.profile_picture
     )
+
+
+# implementation of the search endpoint with pagination and rate limiting
+
+def get_skip(skip: int = Query(0, alias="skip")) -> int:
+    return skip
+
+
+def get_limit(limit: int = Query(10, alias="limit")) -> int:
+    return min(limit, 500)
+
+
+@router.get("/search/", response_model=List[UserProfile], status_code=status.HTTP_200_OK)
+async def search_users(
+        q: str,
+        role: str = Query(None, enum=["student", "teacher"]),
+        skip: int = Depends(get_skip),
+        limit: int = Depends(get_limit),
+        current_user: User = Depends(get_current_user)
+) -> List[UserProfile]:
+    """ Search for users by query string and role. Support pagination. """
+    """http://localhost:8000/search/?q=John """
+    """ http://localhost:8000/search/?q=Doe&role=teacher """
+    """ http://localhost:8000/search/?q=&role=student&skip=5&limit=10 """
+
+    query = User.filter()
+
+    if q:
+        query = query.filter(
+            Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q) | Q(email__icontains=q)
+        )
+
+    if role:
+        query = query.filter(role=role)
+
+    query = query.offset(skip).limit(limit)
+    users = await query
+
+    return [UserProfile.from_orm(user) for user in users]
