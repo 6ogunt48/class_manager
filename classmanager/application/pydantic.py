@@ -4,7 +4,8 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing_extensions import Literal
 
-from application.db.app_models import Assignment_Pydantic, UserRole
+from application.db.app_models import (Assignment_Pydantic, Marks_Pydantic,
+                                       UserRole)
 
 
 class UserCreate(BaseModel):
@@ -133,3 +134,31 @@ class UserProfileUpdate(BaseModel):
     email: Optional[str]
     profile_picture: Optional[str]
     role: Optional[UserRole]
+
+
+class CreateMark(BaseModel):
+    score: int = Field(..., gt=0, lt=101)
+    comments: str = Field(None, max_length=500)
+
+
+class UpdateMark(BaseModel):
+    score: int = Field(None, gt=0, lt=101)
+    comments: str = Field(None, max_length=500)
+
+
+class MarkCreateResponse(BaseModel):
+    message: str
+    mark: Marks_Pydantic
+
+
+class EnrollCourse(BaseModel):
+    course_id: int
+
+
+class EnrollCourseResponse(BaseModel):
+    message: str
+
+
+class SubmissionCreate(BaseModel):
+    assignment_id: int
+    file_path: Optional[str] = None

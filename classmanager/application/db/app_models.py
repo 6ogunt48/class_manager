@@ -127,6 +127,20 @@ class Enrollment(models.Model):
         return f"{self.student} enrolled in {self.course}"
 
 
+class Submission(models.Model):
+    student = fields.ForeignKeyField("models.User", related_name="submissions")
+    assignment = fields.ForeignKeyField("models.Assignment", related_name="submissions")
+    file_path = fields.CharField(max_length=255, null=True)
+    submitted_at = fields.DatetimeField(auto_now_add=True)
+
+    class Meta:
+        table = "submissions"
+        unique_together = ("student", "assignment")
+
+    def __str__(self):
+        return f"{self.student} submitted for {self.assignment}"
+
+
 # Create Pydantic models
 User_Pydantic = pydantic_model_creator(User, name="User", exclude=("password_hash", "refresh_token"))
 Course_Pydantic = pydantic_model_creator(Course, name="Course")
@@ -135,3 +149,4 @@ Marks_Pydantic = pydantic_model_creator(Marks, name="Marks")
 Notice_Pydantic = pydantic_model_creator(Notice, name="Notice")
 Message_Pydantic = pydantic_model_creator(Message, name="Message")
 Enrollment_Pydantic = pydantic_model_creator(Enrollment, name="Enrollment")
+Submission_Pydantic = pydantic_model_creator(Submission, name="Submission")

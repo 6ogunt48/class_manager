@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 
-from application.api import assignment, auth, courses, ping, users
+from application.api import assignment, auth, courses, marks, ping, users
 from application.db.database_config import init_db
 
 log = logging.getLogger("uvicorn")
@@ -15,6 +15,7 @@ def create_application() -> FastAPI:
     application.include_router(courses.router, prefix="/courses", tags=["courses"])
     application.include_router(assignment.router, prefix="/assignment", tags=["assignment"])
     application.include_router(users.router, prefix="/users", tags=["Users"])
+    application.include_router(marks.router, prefix="/marks", tags=["Marks"])
 
     return application
 
