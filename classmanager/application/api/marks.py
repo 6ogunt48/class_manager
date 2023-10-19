@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
@@ -66,3 +68,30 @@ async def edit_mark(
     updated_mark_data = await Marks_Pydantic.from_queryset_single(Marks.get(id=mark_id))
 
     return MarkCreateResponse(message="Mark successfully updated", mark=updated_mark_data)
+
+
+@router.get("/view-student-marks/", response_model=List[Marks_Pydantic], status_code=status.HTTP_200_OK)
+async def view_student_marks(current_user: User = Depends(get_current_user)) -> List[Marks_Pydantic]:
+    if current_user.role != UserRole.STUDENT:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+    # Fetch marks for the current student
+    student_marks = await Marks.filter(student_id=current_user.id).all()
+
+    if not student_marks:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Marks Found")
+
+    return [await Marks_Pydantic.from_tortoise_orm(mark) for mark in student_marks]
+
+
+@router.get("/teacher/marks/{student_id}/", response_model=List[Marks_Pydantic], status_code=status.HTTP_200_OK)
+async def get_student_marks_by_teacher(student_id: int, current_user: User = Depends(get_current_user)) -> List[Marks_Pydantic]:
+    if current_user.role != UserRole.TEACHER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized")
+
+    # Fetch marks given by the teacher to the specified student
+    marks = await Marks.filter(student_id=student_id).all()
+    if not marks:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No marks found")
+
+    return [await Marks_Pydantic.from_tortoise_orm(mark) for mark in marks]
