@@ -5,15 +5,15 @@ To Test out API in local development mode - You need ckone the repository locall
 
 At the root of the project where the docker-compose file is located .Kindly run 
 
-``` docker-compose build ```
+```sh docker-compose build ```
 
 once this is running this will build up the cntainers of both the application and database. once done, we can now start our service by using
 
-``` docker-compose up ```
+```sh docker-compose up ```
 
 once our containers are running please run this code in your browser to see api docs and test endpoints 
 
-``` http://localhost:8004/docs ```
+```sh http://localhost:8004/docs ```
 
 
 
